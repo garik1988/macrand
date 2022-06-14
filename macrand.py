@@ -23,7 +23,7 @@ def check_interface(interface): #checks if user's entered interface exists if no
     else:
         change_mac(interface)
 
-def change_mac(interface):
+def change_mac(interface): #changes the mac address to a random one
         new_mac=generate_mac()
         print ("+ Changing Mac Address for "+interface+" to "+new_mac)
         subprocess.call("ifconfig " + options.interface + " down", shell=True)
