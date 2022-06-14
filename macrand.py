@@ -31,6 +31,9 @@ def change_mac(interface):
         subprocess.call("ifconfig " + options.interface + " up", shell=True)
 
 parser = OptionParser()
+
 parser.add_option("-i", "--interface", dest="interface", help="Interface to change its MAc address")
+
 (options, args) = parser.parse_args()
+
 check_interface(options.interface)
