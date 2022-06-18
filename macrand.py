@@ -1,9 +1,12 @@
 #! usr/bin/env python
 import subprocess
+
 import sys
 
 from randmac import RandMac
+
 from optparse import OptionParser
+
 import re
 
 
