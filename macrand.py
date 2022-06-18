@@ -1,5 +1,7 @@
 #! usr/bin/env python
 import subprocess
+import sys
+
 from randmac import RandMac
 from optparse import OptionParser
 import re
@@ -15,24 +17,38 @@ def generate_mac(): #random mac address generator
 
     return str(generated_mac)
 
-def check_interface(interface): #checks if user's entered interface exists if not lists availamble interfaces
+def list_interfaces(): #returns a list with interfaces
+
     ifconfig_output = subprocess.check_output(["ifconfig"]).decode("utf-8") #creates multine string from ifconfig output in utf-8 encoding
 
     interfaces = re.findall(r"^\w+", ifconfig_output, re.MULTILINE) #makes a list of available interfaces
 
+    interfaces.remove("lo") #removes loopback interface from list
+
+    return interfaces
+
+def print_interfaces():
+
+    interfaces=list_interfaces()
+
+    for i in range(len(interfaces)):  # prints available interfaces
+
+        print(str(i) + ")", interfaces[i], "\n")
+
+def check_interface(interface): #checks if user's entered interface exists if not lists availamble interfaces
+
+    interfaces=list_interfaces()
+
     if  interface  in interfaces: #checks if user's entered interface exists
         change_mac(interface)
+
     else:
 
         print ("+ There is no such interface available")
 
-        print("Available Interfaces: \n")
-
-        for i in range(len(interfaces)):  # prints available interfaces
-
-            print(str(i) + ")", interfaces[i], "\n")
 
 def ifconfig_output_capture_mac(interface): #captures current mac address of interface
+
     ifconfig_output = subprocess.check_output(["ifconfig", interface]).decode("utf-8")
 
     current_mac = re.findall(r"\w\w:\w\w:\w\w:\w\w:\w\w:\w\w", ifconfig_output, re.MULTILINE)
@@ -40,6 +56,10 @@ def ifconfig_output_capture_mac(interface): #captures current mac address of int
     return current_mac[0]
 
 def change_mac(interface):
+
+    if interface=="lo": 
+        print("[-] lo is loopback interface, it dosen't have a mac address choose another interface")
+    else:
 
         new_mac=generate_mac()
 
@@ -74,11 +94,17 @@ def get_arguments():
 
     parser = OptionParser()
 
-    parser.add_option("-i", "--interface", dest="interface", help="Interface to change its MAc address")
+    parser.add_option("-i", "--interface" , dest = "interface" , help = "Interface to change its MAc address")
+
+    parser.add_option("-s", "--show" , action = "store_true", dest = "show", help = "show available interfaces")
 
     (options, args) = parser.parse_args()
 
-    check_interface(options.interface)
+    if options.interface:
+        check_interface(options.interface)
+
+    if options.show==True:
+        print_interfaces()
 
     return options
 
