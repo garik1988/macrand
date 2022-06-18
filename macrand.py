@@ -4,6 +4,9 @@ from randmac import RandMac
 from get_nic import getnic
 from optparse import OptionParser
 
+
+
+
 def generate_mac(): #random mac address generator
 
     example_mac = "00:00:00:00:00:00"
@@ -23,17 +26,28 @@ def check_interface(interface): #checks if user's entered interface exists if no
     else:
         change_mac(interface)
 
-def change_mac(interface): #changes the mac address to a random one
+def change_mac(interface):
         new_mac=generate_mac()
+
         print ("+ Changing Mac Address for "+interface+" to "+new_mac)
-        subprocess.call("ifconfig " + options.interface + " down", shell=True)
-        subprocess.call("ifconfig " + options.interface + " hw ether " + new_mac, shell=True)
-        subprocess.call("ifconfig " + options.interface + " up", shell=True)
 
-parser = OptionParser()
+        subprocess.call("ifconfig " + interface + " down", shell=True)
 
-parser.add_option("-i", "--interface", dest="interface", help="Interface to change its MAc address")
+        subprocess.call("ifconfig " + interface + " hw ether " + new_mac, shell=True)
 
-(options, args) = parser.parse_args()
+        subprocess.call("ifconfig " + interface + " up", shell=True)
+        
+def get_arguments():
+    parser = OptionParser()
 
-check_interface(options.interface)
+    parser.add_option("-i", "--interface", dest="interface", help="Interface to change its MAc address")
+
+    (options, args) = parser.parse_args()
+
+    check_interface(options.interface)
+
+    return options
+
+
+
+options=get_arguments()
